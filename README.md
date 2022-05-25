@@ -1,0 +1,3 @@
+# rust-img-exif
+
+WIP
