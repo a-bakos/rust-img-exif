@@ -1,21 +1,9 @@
 // use std::fs::Metadata;
+use rexif::ExifTag;
+
 mod image;
 
 fn main() {
-    // example image
-    let mut img: image::Meta = image::Meta {
-        name: String::from("DSC0001"),
-        f_stop: 22.0_f32,
-        iso: 100_i32,
-        focal_len: 100,
-        shutter: String::from("500"),
-        date: String::from("2022-05-14 16:05:43"),
-        keywords: vec![String::from("city"), String::from("urban")],
-    };
-
-    image::add_iso(&mut img, 200);
-    println!("{:#?}", img);
-
     // Test
     // Open an img
     //
@@ -36,20 +24,62 @@ fn main() {
                 // Read meta data
                 let _file_meta = get_file_meta(&file_name);
 
+                // example image
+                let mut img: image::Meta = image::Meta {
+                    name: String::from(file_name),
+                    f_stop: String::new(),
+                    iso: String::new(),
+                    focal_len: String::new(),
+                    shutter: String::new(),
+                    date: String::from("2022-05-14 16:05:43"),
+                    keywords: vec![String::from("city"), String::from("urban")],
+                };
+
                 // Loop through the exif data
                 for entry in &exif.entries {
-                    //println!("{:?}", entry.tag); // read tags
+                    //println!("    {:#?}", entry.tag.to_string());
 
-                    println!("    {}: {}", entry.tag, entry.value_more_readable);
-                    // .tag
-                    // .value_more_readable
+                    let exif_tag: String = entry.tag.to_string();
+                    let exif_value: String = entry.value_more_readable.to_string();
+
+                    match exif_tag.as_str().trim() {
+                        "ISO speed ratings" => {
+                            image::add_iso(&mut img, exif_value);
+                        }
+                        "Aperture" => {
+                            image::add_f_stop(&mut img, exif_value);
+                        }
+                        "Exposure time" => {
+                            image::add_shutter(&mut img, exif_value);
+                        }
+                        "Focal length" => {
+                            println!("FocalLength {:?}", entry.value_more_readable);
+                        }
+                        "Meteting mode" => {
+                            println!("MeteringMode {:?}", entry.value_more_readable);
+                        }
+                        "White balance mode" => {
+                            println!("white balance {:?}", entry.value_more_readable);
+                        }
+                        "Lens model" => {
+                            println!("Lensmode {:?}", entry.value_more_readable);
+                        }
+                        "Date of original image" => {
+                            println!("DATETIME {:?}", entry.value_more_readable);
+                        }
+                        _ => (),
+                    }
                 }
+
+                println!("{:#?}", img);
             }
             Err(e) => {
                 // Add error handling
                 println!("ERROR {:?}", e);
             }
         }
+    } else {
+        println!("ERROR");
     }
 }
 

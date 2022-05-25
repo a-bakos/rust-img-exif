@@ -1,19 +1,19 @@
 #[derive(Debug)]
 pub struct Meta {
     pub name: String,
-    pub f_stop: f32,
-    pub iso: i32,
-    pub focal_len: u16,
+    pub iso: String,
+    pub f_stop: String,
+    pub focal_len: String,
     pub shutter: String,
     pub date: String,
     pub keywords: Vec<String>,
 }
 
-pub fn add_iso(meta: &mut Meta, iso: i32) {
-    meta.iso = iso;
+pub fn add_iso(meta: &mut Meta, iso_value: String) {
+    meta.iso = iso_value;
 }
 
-pub fn add_f_stop(meta: &mut Meta, f_value: f32) {
+pub fn add_f_stop(meta: &mut Meta, f_value: String) {
     meta.f_stop = f_value;
 }
 
