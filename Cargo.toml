@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 open = "2.1.2"
+rexif = "0.7.3"

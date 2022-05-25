@@ -1,3 +1,4 @@
+// use std::fs::Metadata;
 mod image;
 
 fn main() {
@@ -13,10 +14,56 @@ fn main() {
     };
 
     image::add_iso(&mut img, 200);
+    println!("{:#?}", img);
 
-    if open::that("img\\DSC00489.jpg").is_ok() {
+    // Test
+    // Open an img
+    //
+    let file_name: &str = "img\\DSC00489.jpg";
+    if open::that(&file_name).is_ok() {
         println!("Image opened");
+
+        // Read exif data if opened
+        match rexif::parse_file(&file_name) {
+            Ok(exif) => {
+                println!(
+                    "File name: {}\nMime type: {}\nExif entries found: {}\n\n",
+                    file_name,
+                    exif.mime,
+                    exif.entries.len()
+                );
+
+                // Read meta data
+                let _file_meta = get_file_meta(&file_name);
+
+                // Loop through the exif data
+                for entry in &exif.entries {
+                    //println!("{:?}", entry.tag); // read tags
+
+                    println!("    {}: {}", entry.tag, entry.value_more_readable);
+                    // .tag
+                    // .value_more_readable
+                }
+            }
+            Err(e) => {
+                // Add error handling
+                println!("ERROR {:?}", e);
+            }
+        }
+    }
+}
+
+fn get_file_meta(file_name: &str) -> std::io::Result<()> {
+    use std::fs;
+
+    let metadata = fs::metadata(&file_name)?;
+
+    if let Ok(time) = metadata.modified() {
+        println!("{:?}", time);
+    } else {
+        println!("Not supported on this platform");
     }
 
-    println!("{:#?}", img);
+    println!("{:?}", metadata.file_type());
+    Ok(())
 }
