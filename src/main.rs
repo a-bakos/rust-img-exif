@@ -1,12 +1,6 @@
-// use std::fs::Metadata;
-use rexif::ExifTag;
-
 mod image;
 
 fn main() {
-    // Test
-    // Open an img
-    //
     let file_name: &str = "img\\DSC00489.jpg";
     if open::that(&file_name).is_ok() {
         println!("Image opened");
@@ -24,15 +18,17 @@ fn main() {
                 // Read meta data
                 let _file_meta = get_file_meta(&file_name);
 
-                // example image
                 let mut img: image::Meta = image::Meta {
                     name: String::from(file_name),
                     f_stop: String::new(),
                     iso: String::new(),
-                    focal_len: String::new(),
+                    focal_length: String::new(),
                     shutter: String::new(),
-                    date: String::from("2022-05-14 16:05:43"),
-                    keywords: vec![String::from("city"), String::from("urban")],
+                    date: String::new(),
+                    keywords: vec![],
+                    lens: String::new(),
+                    white_balance: String::new(),
+                    metering_mode: String::new(),
                 };
 
                 // Loop through the exif data
@@ -43,17 +39,20 @@ fn main() {
                     let exif_value: String = entry.value_more_readable.to_string();
 
                     match exif_tag.as_str().trim() {
+                        "Date of original image" => {
+                            image::add_date(&mut img, exif_value);
+                        }
                         "ISO speed ratings" => {
-                            image::add_iso(&mut img, exif_value);
+                            image::add_exif(&mut img, image::ExifType::Iso, exif_value);
                         }
                         "Aperture" => {
-                            image::add_f_stop(&mut img, exif_value);
+                            image::add_exif(&mut img, image::ExifType::FStop, exif_value);
                         }
                         "Exposure time" => {
-                            image::add_shutter(&mut img, exif_value);
+                            image::add_exif(&mut img, image::ExifType::Shutter, exif_value);
                         }
                         "Focal length" => {
-                            println!("FocalLength {:?}", entry.value_more_readable);
+                            image::add_exif(&mut img, image::ExifType::FocalLen, exif_value);
                         }
                         "Meteting mode" => {
                             println!("MeteringMode {:?}", entry.value_more_readable);
@@ -62,10 +61,7 @@ fn main() {
                             println!("white balance {:?}", entry.value_more_readable);
                         }
                         "Lens model" => {
-                            println!("Lensmode {:?}", entry.value_more_readable);
-                        }
-                        "Date of original image" => {
-                            println!("DATETIME {:?}", entry.value_more_readable);
+                            image::add_exif(&mut img, image::ExifType::LensModel, exif_value);
                         }
                         _ => (),
                     }
