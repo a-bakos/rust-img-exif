@@ -42,6 +42,8 @@ pub enum ExifType {
     Iso,
     FocalLen,
     Shutter,
+    MeteringMode,
+    WhiteBalance,
 }
 
 pub fn add_exif(meta: &mut Meta, exif_type: ExifType, exif_value: String) {
@@ -51,5 +53,7 @@ pub fn add_exif(meta: &mut Meta, exif_type: ExifType, exif_value: String) {
         ExifType::Iso => meta.iso = exif_value,
         ExifType::FocalLen => meta.focal_length = exif_value,
         ExifType::Shutter => meta.shutter = exif_value,
+        ExifType::MeteringMode => meta.metering_mode = exif_value,
+        ExifType::WhiteBalance => meta.white_balance = exif_value,
     }
 }
